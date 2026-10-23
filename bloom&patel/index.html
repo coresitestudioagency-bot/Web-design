@@ -299,34 +299,40 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Hide preloader after 3 seconds (shorter duration)
-      window.addEventListener('load', function() {
+      (function () {
         const preloader = document.getElementById('preloader');
         const video = document.getElementById('preloader-video');
-        
-        // Hide after video ends
-        if (video) {
-          video.addEventListener('ended', function() {
+
+        function revealWebsite() {
+          if (!preloader) return;
+
+          if (!preloader.classList.contains('preloader-hidden')) {
             preloader.classList.add('preloader-hidden');
-            // Trigger website reveal
-            document.body.classList.add('website-reveal');
-            setTimeout(() => {
-              preloader.style.display = 'none';
-            }, 800);
-          });
-        }
-        
-        // Fallback: hide after 3 seconds (reduced from 5s)
-        setTimeout(function() {
-          if (preloader && !preloader.classList.contains('preloader-hidden')) {
-            preloader.classList.add('preloader-hidden');
-            document.body.classList.add('website-reveal');
-            setTimeout(() => {
-              preloader.style.display = 'none';
-            }, 800);
           }
-        }, 3000);
-      });
+
+          document.body.classList.add('website-reveal');
+
+          setTimeout(function () {
+            if (preloader) {
+              preloader.style.display = 'none';
+            }
+          }, 800);
+        }
+
+        function startReveal() {
+          if (video) {
+            video.addEventListener('ended', revealWebsite, { once: true });
+          }
+
+          setTimeout(revealWebsite, 2200);
+        }
+
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+          startReveal();
+        } else {
+          window.addEventListener('DOMContentLoaded', startReveal, { once: true });
+        }
+      })();
     </script>
   </body>
 </html>
